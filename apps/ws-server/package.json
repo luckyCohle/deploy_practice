@@ -12,6 +12,7 @@
     "@repo/typescript-config": "workspace:*"
   },
   "keywords": [],
+  "type": "module",
   "author": "",
   "license": "ISC",
   "description": "",
