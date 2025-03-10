@@ -10,16 +10,19 @@ jobs:
     runs-on: ubuntu-latest 
 
     steps:
-
       - name: SSH Into Server and Deploy
         run: |
+          # Ensure .ssh directory exists
           mkdir -p ~/.ssh
-          chmod 700 ~/.ssh  # Secure the directory
+          chmod 700 ~/.ssh  # Secure .ssh directory
+
           # Create SSH key file
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key  # Set correct permissions for the private key
 
           # Add server to known hosts (prevents SSH confirmation prompt)
           ssh-keyscan -H 51.21.152.6 >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts  # Secure known hosts file
 
           # Connect to server and execute commands
           ssh -i ~/ssh_key -o StrictHostKeyChecking=no ubuntu@51.21.152.6 << 'EOF'
