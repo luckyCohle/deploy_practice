@@ -13,6 +13,8 @@ jobs:
 
       - name: SSH Into Server and Deploy
         run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh  # Secure the directory
           # Create SSH key file
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
 
