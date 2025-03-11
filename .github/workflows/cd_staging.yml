@@ -33,9 +33,10 @@ jobs:
             pnpm run build
 
             # Check if PM2 processes exist before restarting
-            pm2 describe fe-server || pm2 start apps/web/server.js --name fe-server
-            pm2 describe ws-server || pm2 start apps/ws-server/server.js --name ws-server
-            pm2 describe http-server || pm2 start apps/http-server/server.js --name http-server
+          cd apps/web && pm2 start npm --name fe-server -- start
+          cd ../ws-server && pm2 start npm --name ws-server -- start
+          cd ../http-server && pm2 start npm --name http-server -- start
+
 
             # Restart them after ensuring they exist
             pm2 restart fe-server
