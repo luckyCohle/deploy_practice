@@ -30,4 +30,5 @@ jobs:
           pm2 restart fe-server
           pm2 restart ws-server
           pm2 restart http-server 
+          exit
           EOF
