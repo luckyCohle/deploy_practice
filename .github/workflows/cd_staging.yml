@@ -7,7 +7,7 @@ on:
 jobs:
   redeploy_everything:
     name: Deploy everything to the staging cluster
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
 
     steps:
       - name: SSH Into Server and Deploy
@@ -22,13 +22,23 @@ jobs:
 
           # Connect to server and execute deployment
           ssh -i ~/ssh_key -o StrictHostKeyChecking=no ubuntu@51.21.152.6 << 'EOF'
-          export PATH=$HOME/.nvm/versions/node/v22.14.0/bin:$PATH
-          cd deploy_practice/
-          git pull
-          pnpm install
-          pnpm run build
-          pm2 restart fe-server
-          pm2 restart ws-server
-          pm2 restart http-server 
-          exit
+            source ~/.bashrc
+            source ~/.profile
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            cd deploy_practice/
+            git pull
+            pnpm install
+            pnpm run build
+
+            # Check if PM2 processes exist before restarting
+            pm2 describe fe-server || pm2 start apps/web/server.js --name fe-server
+            pm2 describe ws-server || pm2 start apps/ws-server/server.js --name ws-server
+            pm2 describe http-server || pm2 start apps/http-server/server.js --name http-server
+
+            # Restart them after ensuring they exist
+            pm2 restart fe-server
+            pm2 restart ws-server
+            pm2 restart http-server
           EOF
