@@ -12,28 +12,17 @@ jobs:
     steps:
       - name: SSH Into Server and Deploy
         run: |
-          # Ensure .ssh directory exists
+          # Create SSH key file safely
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
+          chmod 600 ~/ssh_key
+          
+          # Ensure known_hosts file exists
           mkdir -p ~/.ssh
-          chmod 700 ~/.ssh  
+          printf "%s" "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
 
-          # Create SSH key file
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/ssh_key
-          chmod 600 ~/ssh_key  
-
-          # Add server to known hosts
-          ssh-keyscan -H 51.21.152.6 >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts  
-
-          # SSH into the server and deploy
+          # Connect to server and execute deployment
           ssh -i ~/ssh_key -o StrictHostKeyChecking=no ubuntu@51.21.152.6 << 'EOF'
-            # Load environment variables
-            source ~/.bashrc || source ~/.profile
-
-            # Debugging: Check if pnpm and pm2 are available
-            which pnpm || echo "pnpm not found"
-            which pm2 || echo "pm2 not found"
-
-            # Change to project directory and deploy
+            source ~/.profile
             cd deploy_practice/
             git pull
             pnpm install
